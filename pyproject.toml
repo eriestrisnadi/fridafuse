@@ -32,8 +32,10 @@ path = "src/fridafuse/__about__.py"
 
 [tool.hatch.build.targets.sdist]
 exclude = [
+    "/.editorconfig",
     "/.github",
     "/docs",
+    "/ext",
     "/tests",
 ]
 
