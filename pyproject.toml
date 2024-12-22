@@ -20,7 +20,9 @@ classifiers = [
     "Programming Language :: Python :: 3.10",
     "Topic :: Software Development :: Debuggers",
 ]
-dependencies = []
+dependencies = [
+    "requests>=2.32.2",
+]
 
 [project.scripts]
 fridafuse = "fridafuse.main:main"
@@ -41,6 +43,14 @@ exclude = [
 
 [tool.hatch.build.targets.wheel]
 packages = ["src/fridafuse"]
+
+
+# Dev Configuration
+
+[tool.hatch.envs.hatch-test]
+extra-dependencies = [
+    "requests-mock>=1.12.1",
+]
 
 [tool.coverage.run]
 source_pkgs = ["fridafuse", "tests"]
