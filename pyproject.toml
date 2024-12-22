@@ -42,14 +42,6 @@ exclude = [
 [tool.hatch.build.targets.wheel]
 packages = ["src/fridafuse"]
 
-[tool.hatch.envs.types]
-extra-dependencies = [
-    "mypy>=1.0.0",
-]
-
-[tool.hatch.envs.types.scripts]
-check = "mypy --install-types --non-interactive {args:src/fridafuse tests}"
-
 [tool.coverage.run]
 source_pkgs = ["fridafuse", "tests"]
 branch = true
@@ -69,7 +61,10 @@ exclude_lines = [
     "if TYPE_CHECKING:",
 ]
 
-[tool.isort]
-profile = "black"
-src_paths = ["src/fridafuse", "test"]
-honor_noqa = true
+[tool.ruff.format]
+quote-style = "single"
+
+[tool.ruff.lint.extend-per-file-ignores]
+"hatch_build.py" = ["S102"]
+"src/fridafuse/__init__.py" = ["UP036", "TRY003"]
+"src/fridafuse/cli.py" = ["T201"]

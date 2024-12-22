@@ -1,6 +1,8 @@
+from __future__ import annotations
+
 from typing import Sequence
 
-from . import cli, logger
+from fridafuse import cli, logger
 
 
 def main(args: Sequence[str] | None = None, **kwargs):
