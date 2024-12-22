@@ -37,4 +37,4 @@ logging.basicConfig(
     handlers=[logging.StreamHandler(sys.stdout)]
 )
 
-logging.getLogger(__name__)
+logger = logging.getLogger(__name__)

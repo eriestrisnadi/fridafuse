@@ -1,10 +1,14 @@
-import logging
+from typing import Sequence
 
-from . import cli
+from . import cli, logger
 
 
-def main():
-    print(cli.logo())
-    args = cli.parse_args()
+def main(args: Sequence[str] | None = None, **kwargs):
+    cli.print_logo()
+    cli.parse_args(args, **kwargs)
+    logger.info('Starting...')
 
-    logging.info('Done.')
+    # TODO: Implement the main functionality here
+    # raise NotImplementedError('Not implemented yet')
+
+    logger.info('Done.')
