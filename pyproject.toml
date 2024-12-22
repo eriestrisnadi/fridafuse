@@ -53,16 +53,11 @@ extra-dependencies = [
 ]
 
 [tool.coverage.run]
-source_pkgs = ["fridafuse", "tests"]
 branch = true
 parallel = true
 omit = [
     "src/fridafuse/__about__.py",
 ]
-
-[tool.coverage.paths]
-fridafuse = ["src/fridafuse"]
-tests = ["tests"]
 
 [tool.coverage.report]
 exclude_lines = [
