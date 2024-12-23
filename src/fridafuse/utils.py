@@ -1,9 +1,12 @@
 from __future__ import annotations
 
 from subprocess import PIPE, STDOUT, CalledProcessError, CompletedProcess, Popen
-from typing import Callable
+from typing import TYPE_CHECKING, Callable
 
 from fridafuse import logger
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def stdout_handler(line: str):
@@ -36,3 +39,12 @@ def spawn_subprocess(args, *, check: bool = True, stdout_handler: Callable[[str]
         raise CalledProcessError(retcode, process.args)
 
     return CompletedProcess(process.args, retcode)
+
+
+def find_file(file: Path, dirs: list[Path]):
+    for sub_dir in dirs:
+        for f in sub_dir.rglob(file.name):
+            if f.is_file():
+                return f
+
+    return None
