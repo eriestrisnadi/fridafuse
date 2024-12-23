@@ -1,5 +1,7 @@
 from __future__ import annotations
 
+import lzma
+import shutil
 from subprocess import PIPE, STDOUT, CalledProcessError, CompletedProcess, Popen
 from typing import TYPE_CHECKING, Callable
 
@@ -39,6 +41,18 @@ def spawn_subprocess(args, *, check: bool = True, stdout_handler: Callable[[str]
         raise CalledProcessError(retcode, process.args)
 
     return CompletedProcess(process.args, retcode)
+
+
+def unpack_xz(src: Path, dest: Path):
+    if dest.exists():
+        dest.unlink() if dest.is_file() else shutil.rmtree(dest)
+
+    logger.info(f'Extracting {src.name}...')
+    with lzma.open(src, 'rb') as compressed_file, dest.open(mode='wb') as extracted:
+        extracted.write(compressed_file.read())
+
+    logger.info('Extraction complete.')
+    return dest
 
 
 def find_file(file: Path, dirs: list[Path]):
