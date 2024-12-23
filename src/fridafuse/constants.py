@@ -7,6 +7,8 @@ GH_BASE_URL = 'https://github.com'
 LATEST_VERSION = 'latest'
 CACHE_DIR = Path.cwd() / f'.{__title__}_cache'
 MANIFEST_NAMESPACE = {'android': 'http://schemas.android.com/apk/res/android'}
+ARCHITECTURES = ['arm', 'arm64', 'x86', 'x86_64']
+ABIS = ['armeabi-v7a', 'arm64-v8a', 'x86', 'x86_64']
 
 # colors
 RED: str = '\033[0;91m'
