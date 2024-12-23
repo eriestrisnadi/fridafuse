@@ -55,3 +55,5 @@ def test_find_file(tmp_path: Path):
     assert utils.find_file(file, [tmp_path / 'sub_dir', tmp_path]) == file
     assert utils.find_file(file, [tmp_path / 'sub_dir', tmp_path / 'sub_dir']) is None
     assert utils.find_file(file, [tmp_path / 'sub_dir', tmp_path / 'sub_dir', tmp_path]) == file
+
+    file.unlink()

@@ -1,18 +1,19 @@
 from __future__ import annotations
 
+import shutil
 from typing import TYPE_CHECKING
 
 import pytest
 
-from fridafuse import constants, manifest_utils
+from fridafuse import manifest_utils
 
 if TYPE_CHECKING:
     from pathlib import Path
 
 
 @pytest.fixture
-def decompiled_mock():
-    decompiled_dir = constants.CACHE_DIR / 'test.apk_decompiled'
+def decompiled_mock(tmp_path: Path):
+    decompiled_dir = tmp_path / 'test.apk_decompiled'
     decompiled_dir.mkdir(parents=True, exist_ok=True)
 
     manifest_file = decompiled_dir / 'AndroidManifest.xml'
@@ -55,12 +56,14 @@ def decompiled_mock():
 
     smali_file.touch(exist_ok=True)
 
-    return {
+    yield {
         'decompiled_dir': decompiled_dir,
         'manifest_file': manifest_file,
         'manifest_file_without_main_activity': manifest_file_without_main_activity,
         'smali_file': smali_file,
     }
+
+    shutil.rmtree(decompiled_dir)
 
 
 def test_get_main_activity(decompiled_mock: dict[str, Path]):
