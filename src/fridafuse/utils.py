@@ -7,12 +7,22 @@ from fridafuse import logger
 
 
 def stdout_handler(line: str):
-    line_parts = line.split(':', 1)
-    log_map = {'I': logger.info, 'Error': logger.error}
-    log = log_map.get(line_parts[0], logger.info)
-    message = (line if line_parts[0] not in log_map else line_parts[1]).lstrip()
+    level, message = tuple(line.split(':', 1)) if ':' in line else ('I', line)
+    log_map = {
+        'I': logger.info,
+        'INFO': logger.info,
+        'W': logger.warning,
+        'WARN': logger.warning,
+        'WARNING': logger.warning,
+        'E': logger.error,
+        'ERR': logger.error,
+        'ERROR': logger.error,
+        'D': logger.debug,
+        'DEBUG': logger.debug,
+    }
+    log = log_map.get(level.upper(), logger.info)
 
-    return log(message)
+    return log(message.lstrip())
 
 
 def spawn_subprocess(args, *, check: bool = True, stdout_handler: Callable[[str], None] = stdout_handler, **kwargs):
