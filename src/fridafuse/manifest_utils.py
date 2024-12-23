@@ -19,7 +19,7 @@ def get_root_manifest(manifest_file: Path):
 def get_main_activity(manifest_file: Path):
     root = get_root_manifest(manifest_file)
 
-    if root:
+    if root is not None:
         for activity in root.findall('.//activity', namespaces=constants.MANIFEST_NAMESPACE):
             for intent_filter in activity.findall('.//intent-filter', namespaces=constants.MANIFEST_NAMESPACE):
                 has_main_action = any(
@@ -53,7 +53,7 @@ def get_main_activity_path(manifest_file: Path):
 def is_extract_native_libs_enabled(manifest_file: Path):
     root = get_root_manifest(manifest_file)
 
-    if root:
+    if root is not None:
         application_element = root.find('application', namespaces=constants.MANIFEST_NAMESPACE)
         extract_native_libs = application_element.get(f'{{{constants.MANIFEST_NAMESPACE["android"]}}}extractNativeLibs')
 
