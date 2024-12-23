@@ -2,6 +2,8 @@ from fridafuse import downloader, patcher
 
 
 def test_decompile_recompile_apk():
+    repo = 'httptoolkit/android-ssl-pinning-demo'
+    version = 'v1.4.1'
     file = downloader.download_release_asset(repo, version, 'pinning-demo.apk', downloader.CACHE_DIR)
     decompiled_dir, recompile_apk = patcher.decompile_apk(file)
 
