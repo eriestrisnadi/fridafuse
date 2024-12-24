@@ -55,8 +55,11 @@ def is_extract_native_libs_enabled(manifest_file: Path):
 
     if root is not None:
         application_element = root.find('application', namespaces=constants.MANIFEST_NAMESPACE)
-        extract_native_libs = application_element.get(f'{{{constants.MANIFEST_NAMESPACE["android"]}}}extractNativeLibs')
+        if application_element is not None:
+            extract_native_libs = application_element.get(
+                f'{{{constants.MANIFEST_NAMESPACE["android"]}}}extractNativeLibs'
+            )
 
-        return extract_native_libs != 'false'
+            return extract_native_libs != 'false'
 
     return None
