@@ -15,6 +15,10 @@ def get_latest_version(repo: str):
 def download_release_asset(repo: str, version: str, asset_name: str, output_path: Path):
     url = f'{GH_BASE_URL}/{repo}/releases/download/{version}/{asset_name}'
     output_file = output_path / asset_name
+
+    if not output_file.parent.is_dir():
+        output_file.parent.mkdir(exist_ok=True, parents=True)
+
     is_already_downloaded = output_file.is_file()
 
     if is_already_downloaded:

@@ -24,6 +24,7 @@ def test_parse_args(capsys):
     unknown_args = ['', '--lipsum', '--arg1', '--arg2']
     err_message = 'error: unrecognized arguments: {}'
 
+    # TODO: need regress the assertions
     for i, args in enumerate([known_args, unknown_args]):
         for arg in args:
             with pytest.raises(SystemExit):
