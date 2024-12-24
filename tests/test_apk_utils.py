@@ -94,6 +94,7 @@ def test_is_smali_injected():
     smali_file.read_text.return_value = original_text + injection_code + '\nadditional rest of strings...'
     assert apk_utils.is_smali_injected(smali_file, injection_code)
 
+
 def test_is_lib_injected(mocker):
     src = MagicMock(spec=Path)
     target = MagicMock(spec=Path)
@@ -101,22 +102,23 @@ def test_is_lib_injected(mocker):
     # Mocking elf_reader.get_needed to return specific values for NEEDED
     mocker.patch('fridafuse.elf_reader.get_needed', return_value=[('NEEDED', 'libc.so.6', 'libc.so.6')])
 
-    src.name = "libc.so.6"
+    src.name = 'libc.so.6'
     assert apk_utils.is_lib_injected(src, target) is True
 
-    src.name = "libtest.so"
+    src.name = 'libtest.so'
     assert apk_utils.is_lib_injected(src, target) is False
+
 
 def test_is_frida(mocker):
     file = MagicMock(spec=Path, is_file=MagicMock(return_value=False))
 
     assert apk_utils.is_frida(file) is False
-    
+
     # Mocking elf_reader.get_needed to return specific values for SONAME
     mocker.patch('fridafuse.elf_reader.get_needed', return_value=[('SONAME', '', 'frida')])
-    
+
     file.is_file.return_value = True
     assert apk_utils.is_frida(file) is True
-    
+
     mocker.patch('fridafuse.elf_reader.get_needed', return_value=[('SONAME', '', 'libtest')])
     assert apk_utils.is_frida(file) is False

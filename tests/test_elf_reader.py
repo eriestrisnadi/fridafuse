@@ -27,12 +27,12 @@ def test_get_needed_with_entries(mock_lief):
         (ELF.DynamicEntry.TAG.NEEDED, 'libc.so.6'),
         (ELF.DynamicEntry.TAG.SONAME, 'libtest.so'),
         (ELF.DynamicEntry.TAG.NULL, ''),
-        (ELF.DynamicEntry.TAG.FINI, 'unknown')
+        (ELF.DynamicEntry.TAG.FINI, 'unknown'),
     ]
 
     mock_lief.parse.return_value.dynamic_entries = []
 
-    for (tag, value) in entries:
+    for tag, value in entries:
         entry = MagicMock(tag=tag, value=value)
         entry.name = value
         mock_lief.parse.return_value.dynamic_entries.append(entry)
