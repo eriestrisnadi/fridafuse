@@ -23,16 +23,14 @@ def get_available_archs(lib_dir: Path):
     return [(arch, abi) for arch, abi in pairs if abi in get_available_abis(lib_dir)]
 
 
-def get_available_native_libs(lib_dir: Path, arch: str, excludes: list[str] | None = None):
-    target_dir = lib_dir / arch
-
-    if not target_dir.is_dir():
+def get_available_native_libs(arch_dir: Path, excludes: list[str] | None = None):
+    if not arch_dir.is_dir():
         return []
 
     if excludes is None:
         excludes = []
 
-    return [file.name for file in target_dir.iterdir() if file.is_file() and file.name not in excludes]
+    return [file.name for file in arch_dir.iterdir() if file.is_file() and file.name not in excludes]
 
 
 def lib_to_base_name(lib_name: str):
