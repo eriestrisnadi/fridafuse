@@ -37,13 +37,9 @@ def lib_to_base_name(lib_name: str):
     return re.sub(r'^(lib)?(.*?)(\.[^.]+)?$', r'\2', lib_name)
 
 
-def is_smali_injected(injection_code: str, smali_file: Path):
-    injection_lines = [line.strip() for line in str(injection_code).strip().splitlines()]
-
-    with smali_file.open('r') as file:
-        smali_content = file.read()
-
-    smali_lines = [line.strip() for line in smali_content.splitlines()]
+def is_smali_injected(smali_file: Path, injection_code: str):
+    injection_lines = [line.strip() for line in injection_code.splitlines()]
+    smali_lines = [line.strip() for line in smali_file.read_text(encoding='utf-8').splitlines()]
 
     return all(line in smali_lines for line in injection_lines)
 

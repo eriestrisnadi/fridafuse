@@ -65,3 +65,31 @@ def test_get_available_native_libs(mock_lib_dir):
 
     assert apk_utils.get_available_native_libs(arch_dir) == [lib for lib in libs if lib != libs[2]]
     assert libs[1] not in apk_utils.get_available_native_libs(arch_dir, excludes=[libs[1]])
+
+
+def test_lib_to_base_name():
+    # Test various library names
+    assert apk_utils.lib_to_base_name('libtest.so') == 'test'
+    assert apk_utils.lib_to_base_name('test.so') == 'test'
+    assert apk_utils.lib_to_base_name('libtest') == 'test'
+    assert apk_utils.lib_to_base_name('test') == 'test'
+    assert apk_utils.lib_to_base_name('libtest.dylib') == 'test'
+
+
+def test_is_smali_injected():
+    original_text = """
+    just some
+    random text
+    for test
+    purpose
+    """
+    injection_code = """method1
+                        method2
+                        method3"""
+    smali_file = MagicMock(
+        spec=Path, is_file=MagicMock(return_value=True), read_text=MagicMock(return_value=original_text)
+    )
+    assert not apk_utils.is_smali_injected(smali_file, injection_code)
+
+    smali_file.read_text.return_value = original_text + injection_code + '\nadditional rest of strings...'
+    assert apk_utils.is_smali_injected(smali_file, injection_code)
