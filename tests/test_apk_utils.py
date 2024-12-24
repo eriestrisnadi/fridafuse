@@ -108,7 +108,9 @@ def test_is_lib_injected(mocker):
     assert apk_utils.is_lib_injected(src, target) is False
 
 def test_is_frida(mocker):
-    file = MagicMock(spec=Path)
+    file = MagicMock(spec=Path, is_file=MagicMock(return_value=False))
+
+    assert apk_utils.is_frida(file) is False
     
     # Mocking elf_reader.get_needed to return specific values for SONAME
     mocker.patch('fridafuse.elf_reader.get_needed', return_value=[('SONAME', '', 'frida')])

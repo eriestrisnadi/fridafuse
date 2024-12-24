@@ -1,6 +1,7 @@
 from __future__ import annotations
 
 import logging
+from unittest.mock import MagicMock
 from random import choice
 from subprocess import CalledProcessError, CompletedProcess
 from typing import TYPE_CHECKING
@@ -9,8 +10,7 @@ import pytest
 
 from fridafuse import utils
 
-if TYPE_CHECKING:
-    from pathlib import Path
+from pathlib import Path
 
 
 def test_stdout_handler(caplog):
@@ -57,3 +57,36 @@ def test_find_file(tmp_path: Path):
     assert utils.find_file(file, [tmp_path / 'sub_dir', tmp_path / 'sub_dir', tmp_path]) == file
 
     file.unlink()
+
+
+def test_unpack_xz(mocker):
+    src = MagicMock(spec=Path)
+    dest = MagicMock(spec=Path)
+    src.name = "archive.xz"
+    src.open.return_value = mocker.mock_open(read_data=b"compressed data").return_value
+    dest.exists.return_value = False
+    dest.open.return_value = mocker.mock_open().return_value
+
+    # successful extraction
+    mock_lzma_open = mocker.patch("lzma.open", return_value=mocker.mock_open(read_data=b"decompressed data").return_value)
+
+    utils.unpack_xz(src, dest)
+
+    mock_lzma_open.assert_called_once_with(src, "rb")
+    dest.open.assert_called_once_with(mode="wb")
+    dest.open.return_value.write.assert_called_once_with(b"decompressed data")
+
+    # behavior when destination exists as a file
+    dest.exists.return_value = True
+    dest.is_file.return_value = True
+    mock_unlink = mocker.patch.object(dest, "unlink")
+
+    utils.unpack_xz(src, dest)
+    mock_unlink.assert_called_once()
+
+    # behavior when destination exists as a directory
+    dest.is_file.return_value = False
+    mock_rmtree = mocker.patch("shutil.rmtree")
+
+    utils.unpack_xz(src, dest)
+    mock_rmtree.assert_called_once_with(dest)

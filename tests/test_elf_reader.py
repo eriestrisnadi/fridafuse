@@ -23,13 +23,20 @@ def test_get_needed_no_dynamic_entries(mock_lief):
 
 
 def test_get_needed_with_entries(mock_lief):
-    mock_entry_1 = MagicMock(tag=ELF.DynamicEntry.TAG.NEEDED, value='libc.so.6')
-    mock_entry_1.name = 'libc.so.6'
-    mock_entry_2 = MagicMock(tag=ELF.DynamicEntry.TAG.SONAME, value='libtest.so')
-    mock_entry_2.name = 'libtest.so'
-    mock_entry_3 = MagicMock(tag=ELF.DynamicEntry.TAG.NULL, value='', name='')
+    entries = [
+        (ELF.DynamicEntry.TAG.NEEDED, 'libc.so.6'),
+        (ELF.DynamicEntry.TAG.SONAME, 'libtest.so'),
+        (ELF.DynamicEntry.TAG.NULL, ''),
+        (ELF.DynamicEntry.TAG.FINI, 'unknown')
+    ]
 
-    mock_lief.parse.return_value.dynamic_entries = [mock_entry_1, mock_entry_2, mock_entry_3]
+    mock_lief.parse.return_value.dynamic_entries = []
+
+    for (tag, value) in entries:
+        entry = MagicMock(tag=tag, value=value)
+        entry.name = value
+        mock_lief.parse.return_value.dynamic_entries.append(entry)
+
     src = Path('/fake/path')
 
     result = get_needed(src)
