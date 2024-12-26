@@ -22,6 +22,7 @@ classifiers = [
 ]
 dependencies = [
     "defusedxml>=0.7.1",
+    "inquirer>=3.4.0",
     "lief>=0.16.0",
     "pyyaml~=6.0",
     "requests>=2.32.2",

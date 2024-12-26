@@ -5,6 +5,7 @@ import shutil
 from pathlib import Path
 from typing import Callable
 
+import inquirer
 import yaml
 
 from fridafuse import apk_utils, downloader, logger, manifest_utils, utils
@@ -126,9 +127,68 @@ def inject_smali(
     return smali_injected and all(frida_installed_list)
 
 
-# TODO: Implement Native Lib injection
-def inject_nativelib():
-    pass
+def inject_nativelib(
+    lib_dir: Path,
+    *,
+    lib_name: str | None = None,
+    gadget_name: str = DEST_GADGET_NAME,
+    gadget_version: str = downloader.LATEST_VERSION,
+):
+    err_message = "Couldn't inject into Native Library"
+
+    if not lib_dir.is_dir():
+        return logger.error(f"{err_message}, lib directory couldn't be found.")
+
+    available_archs = apk_utils.get_available_archs(lib_dir)
+
+    if len(available_archs) <= 0:
+        return logger.error(f'{err_message}, No supported ABIs found.')
+
+    available_native_libs = apk_utils.get_available_native_libs(lib_dir / available_archs[0][1], gadget_name)
+
+    if len(available_native_libs) <= 0:
+        return logger.error(f'{err_message}, No Native Library found.')
+
+    lib_name = (
+        inquirer.list_input('Choose Native Library to inject:', choices=available_native_libs)
+        if lib_name is None
+        else lib_name
+    )
+
+    logger.info('Checking libs...')
+    success_list = [False] * len(available_archs)
+    skip_list = [False] * len(available_archs)
+
+    for i, (arch, abi) in enumerate(available_archs):
+        dest_abi = lib_dir / abi
+        dest_gadget = dest_abi / gadget_name
+        dest_lib = dest_abi / lib_name
+        relative_lib_name = '/'.join(dest_lib.parts[-2:])
+
+        if apk_utils.is_lib_injected(dest_gadget, dest_lib):
+            if apk_utils.is_frida(dest_gadget):
+                logger.info(f'Already injected {dest_gadget.name} into {relative_lib_name}. Skiping...')
+                skip_list[i] = True
+                success_list[i] = True
+                continue
+
+            # TODO: suggest to change frida-gadget name due to conflicting with other native lib
+            logger.error(f'{err_message}, conflicting name {dest_gadget.name} with {relative_lib_name}.')
+            break
+
+        compressed_gadget = downloader.get_frida_gadget(arch, version=gadget_version)
+        gadget_file = utils.unpack_xz(compressed_gadget, dest_gadget)
+        logger.info(f'Injecting frida-gadget to {relative_lib_name}')
+        elf = apk_utils.elf_reader.parse(dest_lib)
+        elf.add_library(gadget_file.name)
+        elf.write(str(dest_lib))
+
+        if not apk_utils.is_lib_injected(gadget_file, dest_lib, verbose=True):
+            logger.error(f'{err_message}, failed to do ELF injection.')
+        elif apk_utils.is_frida(dest_gadget):
+            success_list[i] = True
+
+    return all(success_list)
 
 
 def decompile_apk(file: Path) -> tuple[Path, Callable[[Path | None], Path]]:

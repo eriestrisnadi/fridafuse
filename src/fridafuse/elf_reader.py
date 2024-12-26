@@ -2,8 +2,7 @@ from __future__ import annotations
 
 from typing import TYPE_CHECKING
 
-import lief
-from lief import ELF
+from lief import ELF, parse
 
 from fridafuse import logger
 
@@ -12,7 +11,7 @@ if TYPE_CHECKING:
 
 
 def get_needed(src: Path, *, verbose: bool = False) -> list[tuple[str, str, str]]:
-    dynamic_entries = lief.parse(src).dynamic_entries
+    dynamic_entries = parse(src).dynamic_entries
     result = []
 
     if len(dynamic_entries) <= 0:
@@ -36,7 +35,7 @@ def get_needed(src: Path, *, verbose: bool = False) -> list[tuple[str, str, str]
 
         if verbose:
             # Convert value to hex if it's a valid integer
-            value = int(parts[1], 16) if parts[1].isdigit() else parts[1]
+            value = int(parts[1], 16) if parts[1] is int else parts[1]
             logger.info(f_value.format(parts[0], value, parts[2]))
 
     return result

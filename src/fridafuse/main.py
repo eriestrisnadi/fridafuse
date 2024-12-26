@@ -23,7 +23,8 @@ def main(args: Sequence[str] | None = None, **kwargs):
         if not patcher.inject_smali(manifest_file):
             sys.exit(1)
     elif args.method == 'native-lib':
-        'Native Library method'
+        if not patcher.inject_nativelib(lib_dir=manifest_file.parent / constants.LIB_DIR_NAME, lib_name=args.lib):
+            sys.exit(1)
     else:
         'Auto method'
 
