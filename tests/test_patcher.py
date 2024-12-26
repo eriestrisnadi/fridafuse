@@ -24,7 +24,7 @@ def test_decompile_recompile_apk(apk_mock: Path, tmp_path: Path):
     decompiled_dir, recompile_apk = patcher.decompile_apk(file)
 
     assert decompiled_dir.is_dir()
-    assert decompiled_dir.name == f'{file.name}_decompiled'
+    assert decompiled_dir.name == f'{file.stem}_decompiled'
 
     recompiled_file = recompile_apk(tmp_path / f'{file.stem}_patched-unsigned.apk')
 

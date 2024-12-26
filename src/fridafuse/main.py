@@ -1,9 +1,10 @@
 from __future__ import annotations
 
+import sys
 from pathlib import Path
 from typing import Sequence
 
-from fridafuse import cli, logger, patcher
+from fridafuse import cli, constants, logger, patcher
 
 
 def main(args: Sequence[str] | None = None, **kwargs):
@@ -14,11 +15,13 @@ def main(args: Sequence[str] | None = None, **kwargs):
     output_file = None if not args.output else Path(args.output)
 
     decompiled_dir, recompile_apk = patcher.decompile_apk(input_file)
+    manifest_file = decompiled_dir / constants.ANDROID_MANIFEST_NAME
 
     # TODO: Implement the main functionality here
     # raise NotImplementedError('Not implemented yet')
     if args.method == 'smali':
-        'Smali method'
+        if not patcher.inject_smali(manifest_file):
+            sys.exit(1)
     elif args.method == 'native-lib':
         'Native Library method'
     else:

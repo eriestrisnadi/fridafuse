@@ -1,13 +1,10 @@
 from __future__ import annotations
 
 import re
-from typing import TYPE_CHECKING
+from pathlib import Path
 
 from fridafuse import elf_reader
 from fridafuse.constants import ABIS, ARCHITECTURES
-
-if TYPE_CHECKING:
-    from pathlib import Path
 
 
 def get_available_abis(lib_dir: Path):
@@ -37,11 +34,26 @@ def lib_to_base_name(lib_name: str):
     return re.sub(r'^(lib)?(.*?)(\.[^.]+)?$', r'\2', lib_name)
 
 
-def is_smali_injected(smali_file: Path, injection_code: str):
-    injection_lines = [line.strip() for line in injection_code.splitlines()]
-    smali_lines = [line.strip() for line in smali_file.read_text(encoding='utf-8').splitlines()]
+def mask_dynamic_registers(snippet: str, as_mask: str = '<dynamic-register>') -> str:
+    # replace matches any register name (e.g., v0, p0, a0, etc.)
+    return re.sub(r'\{[a-zA-Z]+\d+\}', f'{{{as_mask}}}', re.sub(r'\b[a-zA-Z]+\d+,+\b', f'{as_mask},', snippet))
 
-    return all(line in smali_lines for line in injection_lines)
+
+def is_smali_injected(content: str | Path, snippet: str):
+    resolved_content = (
+        Path(content).read_text(encoding='utf-8')
+        if isinstance(content, Path) and Path(content).is_file()
+        else str(content)
+    )
+
+    normalized_content = '\n'.join([line.strip() for line in resolved_content.splitlines() if line.strip()])
+
+    snippet_lines = [line.strip() for line in mask_dynamic_registers(snippet).splitlines() if line.strip()]
+    snippet_pattern = r'\s*'.join(
+        re.escape(line).replace(r'<dynamic\-register>', r'[a-zA-Z]+\d+') for line in snippet_lines
+    )
+
+    return bool(re.search(snippet_pattern, normalized_content, re.DOTALL))
 
 
 def is_lib_injected(src: Path, target: Path, *, verbose: bool = False):
