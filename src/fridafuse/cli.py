@@ -35,11 +35,11 @@ def parse_args(args: Sequence[str] | None, **kwargs):
 
     # Methods (Subcommands)
     subparsers = parser.add_subparsers(title='methods', dest='method', required=True)
-    _parser_auto = subparsers.add_parser(
-        'auto', parents=[shared_parser], help='Auto inject using native-lib method first, fallback to smali method'
-    )
     parser_nativelib = subparsers.add_parser('native-lib', parents=[shared_parser], help='Inject into Native Library')
     parser_smali = subparsers.add_parser('smali', parents=[shared_parser], help='Inject into Smali')
+    parser_auto = subparsers.add_parser(
+        'auto', parents=[shared_parser], help='Auto inject using native-lib method first, fallback to smali method'
+    )
 
     # Native Lib Method additional arguments
     parser_nativelib.add_argument(
@@ -51,6 +51,17 @@ def parse_args(args: Sequence[str] | None, **kwargs):
     parser_smali.add_argument(
         '--smali', metavar='PATH', help='Specify Smali file to inject (optional; default: main activity)'
     )
+
+    # Auto Method additional arguments
+    for action in [*parser_nativelib._actions, *parser_smali._actions]:  # noqa: SLF001
+        if action.dest not in {
+            existing_action.dest
+            for existing_action in [*shared_parser._actions, *parser_auto._actions]  # noqa: SLF001
+        }:
+            parser_auto.add_argument(
+                *action.option_strings,
+                **{key: value for key, value in vars(action).items() if key not in {'container'}},
+            )
 
     return parser.parse_args(args, **kwargs)
 

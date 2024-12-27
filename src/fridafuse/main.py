@@ -17,16 +17,16 @@ def main(args: Sequence[str] | None = None, **kwargs):
     decompiled_dir, recompile_apk = patcher.decompile_apk(input_file)
     manifest_file = decompiled_dir / constants.ANDROID_MANIFEST_NAME
 
-    # TODO: Implement the main functionality here
-    # raise NotImplementedError('Not implemented yet')
     if args.method == 'smali':
         if not patcher.inject_smali(manifest_file):
             sys.exit(1)
     elif args.method == 'native-lib':
         if not patcher.inject_nativelib(lib_dir=manifest_file.parent / constants.LIB_DIR_NAME, lib_name=args.lib):
             sys.exit(1)
-    else:
-        'Auto method'
+    elif not patcher.inject_nativelib(lib_dir=manifest_file.parent / constants.LIB_DIR_NAME, lib_name=args.lib):
+        logger.warning('Native Library injection failed, trying smali...')
+        if not patcher.inject_smali(manifest_file):
+            sys.exit(1)
 
     if decompiled_dir.is_dir():
         patched_file = recompile_apk(output_file)
