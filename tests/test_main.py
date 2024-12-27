@@ -31,9 +31,17 @@ def test_logging_configuration(caplog):
     assert 'Test log message' in caplog.text
 
 
-def test_main(caplog):
-    caplog.set_level(logging.INFO)
-    main.main([])
+def test_main(capsys):
+    with pytest.raises(SystemExit):
+        main.main([])
 
-    assert caplog.records[0].message == 'Starting...'
-    assert caplog.records[-1].message == 'Done.'
+    captured = capsys.readouterr()
+
+    assert main.cli.logo in captured.out
+    assert main.cli.__version__ in captured.out
+    assert f'{main.cli.__title__}: error:' in captured.err
+    assert f'usage: {main.cli.__title__}' in captured.err
+    assert '-h' in captured.err
+
+    for method in ['smali','native-lib','auto']:
+        assert method in captured.err

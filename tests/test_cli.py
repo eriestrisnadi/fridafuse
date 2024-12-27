@@ -21,10 +21,9 @@ def test_create_parser():
 
 def test_parse_args(capsys):
     known_args = ['-h', '--help']
-    unknown_args = ['', '--lipsum', '--arg1', '--arg2']
-    err_message = 'error: unrecognized arguments: {}'
+    unknown_args = ['--lipsum', '--arg1', '--arg2']
+    err_message = 'error: the following arguments are required: method'
 
-    # TODO: need regress the assertions
     for i, args in enumerate([known_args, unknown_args]):
         for arg in args:
             with pytest.raises(SystemExit):
@@ -33,6 +32,7 @@ def test_parse_args(capsys):
             captured = capsys.readouterr()
             result = err_message.format(arg) not in captured.err if i == 0 else err_message.format(arg) in captured.err
 
+            print(captured)
             assert result
 
 

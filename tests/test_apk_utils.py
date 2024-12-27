@@ -83,9 +83,9 @@ def test_is_smali_injected():
     for test
     purpose
     """
-    injection_code = """method1
+    injection_code = """const-string v0, ad
                         method2
-                        method3"""
+                        method3 {v0}"""
     smali_file = MagicMock(
         spec=Path, is_file=MagicMock(return_value=True), read_text=MagicMock(return_value=original_text)
     )

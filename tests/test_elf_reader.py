@@ -7,22 +7,22 @@ from fridafuse.elf_reader import ELF, get_needed
 
 
 @pytest.fixture
-def mock_lief():
-    with patch('fridafuse.elf_reader.lief') as lief:
-        yield lief
+def mock_elf_parse():
+    with patch('fridafuse.elf_reader.parse') as parse:
+        yield parse
 
 
-def test_get_needed_no_dynamic_entries(mock_lief):
-    mock_lief.parse.return_value.dynamic_entries = []
+def test_get_needed_no_dynamic_entries(mock_elf_parse):
+    mock_elf_parse.return_value.dynamic_entries = []
     src = Path('/fake/path')
 
     result = get_needed(src)
 
     assert result == []
-    mock_lief.parse.assert_called_once_with(src)
+    mock_elf_parse.assert_called_once_with(src)
 
 
-def test_get_needed_with_entries(mock_lief):
+def test_get_needed_with_entries(mock_elf_parse):
     entries = [
         (ELF.DynamicEntry.TAG.NEEDED, 'libc.so.6'),
         (ELF.DynamicEntry.TAG.SONAME, 'libtest.so'),
@@ -30,12 +30,12 @@ def test_get_needed_with_entries(mock_lief):
         (ELF.DynamicEntry.TAG.FINI, 'unknown'),
     ]
 
-    mock_lief.parse.return_value.dynamic_entries = []
+    mock_elf_parse.return_value.dynamic_entries = []
 
     for tag, value in entries:
         entry = MagicMock(tag=tag, value=value)
         entry.name = value
-        mock_lief.parse.return_value.dynamic_entries.append(entry)
+        mock_elf_parse.return_value.dynamic_entries.append(entry)
 
     src = Path('/fake/path')
 
@@ -46,13 +46,13 @@ def test_get_needed_with_entries(mock_lief):
         ('SONAME', 'libtest.so', 'libtest.so'),
     ]
     assert result == expected
-    mock_lief.parse.assert_called_once_with(src)
+    mock_elf_parse.assert_called_once_with(src)
 
 
-def test_get_needed_verbose(mock_lief, caplog):
+def test_get_needed_verbose(mock_elf_parse, caplog):
     mock_entry = MagicMock(tag=ELF.DynamicEntry.TAG.NEEDED, value='libc.so.6', name='libc.so.6')
     mock_entry.name = 'libc.so.6'
-    mock_lief.parse.return_value.dynamic_entries = [mock_entry]
+    mock_elf_parse.return_value.dynamic_entries = [mock_entry]
     src = Path('/fake/path')
 
     with caplog.at_level('INFO'):
@@ -64,4 +64,4 @@ def test_get_needed_verbose(mock_lief, caplog):
     assert 'Value' in caplog.text
     assert 'Info' in caplog.text
     assert 'NEEDED' in caplog.text
-    mock_lief.parse.assert_called_once_with(src)
+    mock_elf_parse.assert_called_once_with(src)
