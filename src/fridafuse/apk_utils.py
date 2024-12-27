@@ -36,14 +36,14 @@ def lib_to_base_name(lib_name: str):
 
 def mask_dynamic_registers(snippet: str, as_mask: str = '<dynamic-register>') -> str:
     # replace matches any register name (e.g., v0, p0, a0, etc.)
-    return re.sub(r'\{[a-zA-Z]+\d+\}', f'{{{as_mask}}}', re.sub(r'\b[a-zA-Z]+\d+,+\b', f'{as_mask},', snippet))
+    return re.sub(r'\{+[a-zA-Z]+\d+\}', f'{{{as_mask}}}', re.sub(r'\s+[a-zA-Z]+\d+\,', f' {as_mask},', snippet))
 
 
 def is_smali_injected(content: str | Path, snippet: str):
     resolved_content = (
-        Path(content).read_text(encoding='utf-8')
-        if isinstance(content, Path) and Path(content).is_file()
-        else str(content)
+        content.read_text(encoding='utf-8')
+        if content is not str
+        else content
     )
 
     normalized_content = '\n'.join([line.strip() for line in resolved_content.splitlines() if line.strip()])
