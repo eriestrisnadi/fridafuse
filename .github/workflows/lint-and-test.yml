@@ -23,4 +23,4 @@ jobs:
         python-version: ${{ matrix.python-version }}
     - run: pipx install hatch
     - run: hatch fmt --check
-    - run: hatch test +py=${{ matrix.python-version }} --cover  # matches entries in pyproject.toml
+    - run: hatch test -i python=${{ matrix.python-version }} --cover  # matches entries in pyproject.toml
