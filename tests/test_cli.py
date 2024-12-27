@@ -32,7 +32,6 @@ def test_parse_args(capsys):
             captured = capsys.readouterr()
             result = err_message.format(arg) not in captured.err if i == 0 else err_message.format(arg) in captured.err
 
-            print(captured)
             assert result
 
 

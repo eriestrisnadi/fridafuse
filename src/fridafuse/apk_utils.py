@@ -1,10 +1,13 @@
 from __future__ import annotations
 
 import re
-from pathlib import Path
+from typing import TYPE_CHECKING
 
 from fridafuse import elf_reader
 from fridafuse.constants import ABIS, ARCHITECTURES
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 
 def get_available_abis(lib_dir: Path):
@@ -40,11 +43,7 @@ def mask_dynamic_registers(snippet: str, as_mask: str = '<dynamic-register>') ->
 
 
 def is_smali_injected(content: str | Path, snippet: str):
-    resolved_content = (
-        content.read_text(encoding='utf-8')
-        if content is not str
-        else content
-    )
+    resolved_content = content.read_text(encoding='utf-8') if content is not str else content
 
     normalized_content = '\n'.join([line.strip() for line in resolved_content.splitlines() if line.strip()])
 

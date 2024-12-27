@@ -43,5 +43,5 @@ def test_main(capsys):
     assert f'usage: {main.cli.__title__}' in captured.err
     assert '-h' in captured.err
 
-    for method in ['smali','native-lib','auto']:
+    for method in ['smali', 'native-lib', 'auto']:
         assert method in captured.err
