@@ -51,6 +51,9 @@ packages = ["src/fridafuse"]
 
 # Dev Configuration
 
+[[tool.hatch.envs.hatch-test.matrix]]
+python = ["3.8", "3.9", "3.10", "3.11"]
+
 [tool.hatch.envs.hatch-test]
 extra-dependencies = [
     "requests-mock>=1.12.1",
