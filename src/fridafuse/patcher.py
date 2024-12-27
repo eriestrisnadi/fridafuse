@@ -48,8 +48,7 @@ def inject_smali(
     smali_injected = apk_utils.is_smali_injected(smali_file, injection_code)
 
     if smali_injected and all(frida_installed_list):
-        logger.info(f'Already injected {gadget_name} into {smali_file.name}. Skiping...')
-        return True
+        return logger.warning(f'Oops the APK is already injected using {gadget_name} on {smali_file.name}. Ignored!')
 
     logger.info('Checking libs...')
 
@@ -187,6 +186,9 @@ def inject_nativelib(
             logger.error(f'{err_message}, failed to do ELF injection.')
         elif apk_utils.is_frida(dest_gadget):
             success_list[i] = True
+
+    if all(skip_list):
+        return logger.warning(f'the APK is already injected using {gadget_name} on {lib_name}. Ignored!')
 
     return all(success_list)
 
