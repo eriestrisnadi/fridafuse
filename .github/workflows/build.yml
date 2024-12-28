@@ -1,0 +1,19 @@
+name: Build Python 🐍 distribution
+
+on: workflow_call
+
+jobs:
+  build:
+    name: Build distribution 📦
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v4
+      with:
+        persist-credentials: false
+    - name: Set up Python
+      uses: actions/setup-python@v5
+      with:
+        python-version: "3.x"
+    - run: pipx install hatch
+    - name: Build a binary wheel and a source tarball
+      run: hatch build
