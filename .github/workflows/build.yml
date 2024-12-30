@@ -17,3 +17,8 @@ jobs:
     - run: pipx install hatch
     - name: Build a binary wheel and a source tarball
       run: hatch build
+    - name: Store the distribution packages
+      uses: actions/upload-artifact@v4
+      with:
+        name: python-package-distributions
+        path: dist/
