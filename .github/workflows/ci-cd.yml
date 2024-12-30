@@ -16,7 +16,7 @@ jobs:
     needs: [build]
     runs-on: ubuntu-latest
     environment:
-      name: pypi
+      name: release
       url: https://pypi.org/p/fridafuse
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
