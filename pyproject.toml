@@ -21,7 +21,7 @@ classifiers = [
     "Topic :: Software Development :: Debuggers",
 ]
 dependencies = [
-    "defusedxml>=0.7.1",
+    "defusedxml>=0.7.0",
     "inquirer>=3.4.0",
     "lief>=0.16.0",
     "pyyaml~=6.0",
