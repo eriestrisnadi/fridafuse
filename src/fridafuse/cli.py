@@ -3,6 +3,8 @@ from __future__ import annotations
 import argparse
 from typing import Sequence
 
+import readchar
+
 from fridafuse.__about__ import __description__, __title__, __version__
 from fridafuse.constants import GRAY, GREEN, LATEST_VERSION, RED, STOP
 
@@ -31,6 +33,9 @@ def parse_args(args: Sequence[str] | None, **kwargs):
     shared_parser.add_argument('--gadget-version', help='Specify frida gadget version', default=LATEST_VERSION)
     shared_parser.add_argument(
         '--skip-sign', help='Skip to create signed APK', default=True, action='store_false', dest='sign'
+    )
+    shared_parser.add_argument(
+        '--edit', help='Edit the APK after decompiling', action='store_true', default=False, dest='edit'
     )
 
     # Methods (Subcommands)
@@ -68,3 +73,9 @@ def parse_args(args: Sequence[str] | None, **kwargs):
 
 def print_logo():
     print(logo)
+
+
+def wait_for_any_input():
+    pressed = readchar.readkey()
+    if pressed == readchar.key.CTRL_C:
+        raise KeyboardInterrupt

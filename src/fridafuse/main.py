@@ -28,6 +28,11 @@ def main(args: Sequence[str] | None = None, **kwargs):
         if not patcher.inject_smali(manifest_file):
             sys.exit(1)
 
+    if args.edit:
+        logger.info(f'Please edit decompiled APK on the following directory: {decompiled_dir}')
+        logger.info('After editing, press any key to continue...')
+        cli.wait_for_any_input()
+
     if decompiled_dir.is_dir():
         patched_file = recompile_apk(output_file)
 
