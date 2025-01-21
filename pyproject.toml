@@ -21,6 +21,7 @@ classifiers = [
     "Topic :: Software Development :: Debuggers",
 ]
 dependencies = [
+    "click>=8.1.8",
     "defusedxml>=0.7.0",
     "inquirer>=3.4.0",
     "lief>=0.16.0",
@@ -29,7 +30,7 @@ dependencies = [
 ]
 
 [project.scripts]
-fridafuse = "fridafuse.main:main"
+fridafuse = "fridafuse.cli:cli"
 
 [tool.hatch.version]
 path = "src/fridafuse/__about__.py"

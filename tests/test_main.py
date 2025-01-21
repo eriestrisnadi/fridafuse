@@ -3,8 +3,9 @@ import sys
 from importlib import reload
 
 import pytest
+from click.testing import CliRunner
 
-from fridafuse import logger, main
+from fridafuse import cli, logger
 
 
 def test_python_version_3(mocker):
@@ -31,17 +32,13 @@ def test_logging_configuration(caplog):
     assert 'Test log message' in caplog.text
 
 
-def test_main(capsys):
-    with pytest.raises(SystemExit):
-        main.main([])
+def test_main():
+    result = CliRunner().invoke(cli.cli, color=True)
 
-    captured = capsys.readouterr()
-
-    assert main.cli.logo in captured.out
-    assert main.cli.__version__ in captured.out
-    assert f'{main.cli.__title__}: error:' in captured.err
-    assert f'usage: {main.cli.__title__}' in captured.err
-    assert '-h' in captured.err
+    assert cli.logo in result.output
+    assert cli.__version__ in result.output
+    assert f'Usage: {cli.__title__}' in result.output
+    assert '-h' in result.output
 
     for method in ['smali', 'native-lib', 'auto']:
-        assert method in captured.err
+        assert method in result.output

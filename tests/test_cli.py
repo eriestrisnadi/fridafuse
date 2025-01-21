@@ -1,42 +1,34 @@
-import pytest
+from pathlib import Path
+
+import click
+from click.testing import CliRunner
 
 from fridafuse import cli
-from fridafuse.__about__ import __description__, __title__, __version__
+from fridafuse.__about__ import __title__, __version__
 
 
-def test_create_parser():
-    progs = [None, 'xyz', None]
-    descriptions = [None, None, 'lorem ipsum dolor']
-    parser_args = zip(progs, descriptions)
+def test_cli():
+    assert isinstance(cli.cli, click.Group)
+    assert CliRunner().get_default_prog_name(cli.cli) is __title__
+    assert CliRunner().invoke(cli.cli, color=True).exit_code == 0
 
-    for args in parser_args:
-        parser = cli.create_parser(*args)
-        prog = args[0] if args[0] is not None else __title__
-        description = args[1] if args[1] is not None else __description__
+    demo_apk = Path('tests/test_files/demo.apk')
 
-        assert parser.prog == prog
-        assert parser.description == description
-        assert isinstance(parser, cli.argparse.ArgumentParser)
+    result = CliRunner().invoke(cli.cli, [demo_apk.as_posix()])
 
+    assert result.exit_code
+    assert result.exception
+    assert 'Usage:' in result.output
+    assert 'Error: Missing command.' in result.output
 
-def test_parse_args(capsys):
-    known_args = ['-h', '--help']
-    unknown_args = ['--lipsum', '--arg1', '--arg2']
-    err_message = 'error: the following arguments are required: method'
+    result = CliRunner().invoke(cli.cli, [demo_apk.as_posix(), 'auto'])
 
-    for i, args in enumerate([known_args, unknown_args]):
-        for arg in args:
-            with pytest.raises(SystemExit):
-                cli.parse_args([arg])
-
-            captured = capsys.readouterr()
-            result = err_message.format(arg) not in captured.err if i == 0 else err_message.format(arg) in captured.err
-
-            assert result
+    assert result.exit_code
+    assert 'Choose Native Library' in result.output
 
 
 def test_print_logo(capsys):
-    cli.print_logo()
+    click.echo(cli.logo, color=True)
     captured = capsys.readouterr()
 
     assert cli.logo in captured.out

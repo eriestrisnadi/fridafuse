@@ -2,6 +2,8 @@ from pathlib import Path
 
 from fridafuse.__about__ import __title__
 
+COMMANDS_DIR = Path(__file__).parent / 'commands'
+
 # default values
 GH_BASE_URL = 'https://github.com'
 LATEST_VERSION = 'latest'
