@@ -3,7 +3,7 @@
 # └  ┴└─┴─┴┘┴ ┴└  └─┘└─┘└─┘
 
 __title__ = 'fridafuse'
-__version__ = '0.1.0'
+__version__ = '0.2.0'
 __description__ = 'Automatically patch APK with frida-gadget into Smali or Native Library.'
 __readme__ = 'README.md'
 __license__ = {
