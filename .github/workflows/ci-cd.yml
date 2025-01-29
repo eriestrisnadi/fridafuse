@@ -22,8 +22,9 @@ jobs:
     - uses: lewagon/wait-on-check-action@v1.3.4
       with:
         ref: ${{ github.ref }}
-        running-workflow-name: 'Test & Coverage'
+        running-workflow-name: 'Publish distribution to PyPI'
         repo-token: ${{ secrets.GITHUB_TOKEN }}
+        check-regexp: Test\s&\sCoverage\son\sPython.
         wait-interval: 10
         allowed-conclusions: success
     - uses: actions/download-artifact@v4
