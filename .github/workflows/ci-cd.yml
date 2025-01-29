@@ -1,26 +1,15 @@
 name: Publish to PyPI and TestPyPI
 
 on:
-  workflow_run:
-    workflows: ["Test & Coverage"]
-    branches: [v*]
-    types: [completed]
+  push:
+    tags: [v*]
 
 jobs:
   build:
     uses: ./.github/workflows/build.yml
 
-  checkout:
-    needs: [build]
-    runs-on: ubuntu-latest
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          persist-credentials: false
-          ref: ${{ github.event.workflow_run.head_branch }}
-
   publish-to-pypi:
-    needs: [build, checkout]
+    needs: [build]
     name: Publish distribution to PyPI
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
@@ -30,6 +19,13 @@ jobs:
     permissions:
       id-token: write  # IMPORTANT: mandatory for trusted publishing
     steps:
+    - uses: lewagon/wait-on-check-action@v1.3.4
+      with:
+        ref: ${{ github.ref }}
+        check-name: 'Test & Coverage'
+        repo-token: ${{ secrets.GITHUB_TOKEN }}
+        wait-interval: 10
+        allowed-conclusions: success
     - uses: actions/download-artifact@v4
       with:
         name: python-package-distributions
@@ -73,14 +69,14 @@ jobs:
           ./dist/*.tar.gz
           ./dist/*.whl
     - env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       run: >-
         gh release create
         "$GITHUB_REF_NAME"
         --repo "$GITHUB_REPOSITORY"
         --notes ""
     - env:
-        GITHUB_TOKEN: ${{ github.token }}
+        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       # Upload to GitHub Release using the `gh` CLI.
       # `dist/` contains the built packages, and the
       # sigstore-produced signatures and certificates.
