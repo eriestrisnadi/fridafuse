@@ -22,7 +22,7 @@ jobs:
     - uses: lewagon/wait-on-check-action@v1.3.4
       with:
         ref: ${{ github.ref }}
-        check-name: 'Test & Coverage'
+        running-workflow-name: 'Test & Coverage'
         repo-token: ${{ secrets.GITHUB_TOKEN }}
         wait-interval: 10
         allowed-conclusions: success
