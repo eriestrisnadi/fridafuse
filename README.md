@@ -24,20 +24,23 @@ pip install fridafuse
 
 ## Usage
 ```
-fridafuse [-h] {native-lib,smali,auto} [additional arguments of each method] INPUT_FILE [OUTPUT_FILE]
+fridafuse [OPTIONS] INPUT COMMAND1 [ARGS]... [COMMAND2 [ARGS]...]...
 ```
 
 The following are the main flags that can be used with fridafuse:
 
 ```
-options:
-  -h, --help            show this help message and exit
+Options:
+  -o, --output PATH
+  --gadget-version TEXT  Specify frida gadget version
+  --skip-sign            Skip to create signed APK
+  --edit                 Edit the APK after patched
+  --help                 Show this message and exit.
 
-methods:
-  {native-lib,smali,auto}
-    native-lib          Inject into Native Library
-    smali               Inject into Smali
-    auto                Auto inject using native-lib method first, fallback to smali method
+Commands:
+  auto
+  native-lib
+  smali
 ```
 
 *Check with help command for more information.*
