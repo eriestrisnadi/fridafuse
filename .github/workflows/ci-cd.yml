@@ -10,8 +10,17 @@ jobs:
   build:
     uses: ./.github/workflows/build.yml
 
-  publish-to-pypi:
+  checkout:
     needs: [build]
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          persist-credentials: false
+          ref: ${{ github.event.workflow_run.head_branch }}
+
+  publish-to-pypi:
+    needs: [build, checkout]
     name: Publish distribution to PyPI
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
