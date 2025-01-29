@@ -3,7 +3,7 @@ name: Publish to PyPI and TestPyPI
 on:
   workflow_run:
     workflows: ["Test & Coverage"]
-    branches: [main]
+    branches: [main,v*]
     types: [completed]
 
 jobs:
