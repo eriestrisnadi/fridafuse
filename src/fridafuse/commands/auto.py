@@ -1,8 +1,13 @@
-from pathlib import Path
+from __future__ import annotations
+
+from typing import TYPE_CHECKING
+
+if TYPE_CHECKING:
+    from pathlib import Path
 
 import click
 
-from fridafuse import cli, commands
+from fridafuse import cli, commands, constants
 
 
 @click.command('auto')
@@ -10,9 +15,15 @@ from fridafuse import cli, commands
     '--lib',
     '-l',
     '-so',
-    help='Specify Native Library to inject (optional; default: questionnaire)',
+    help='Specify Native Library to inject (default: questionnaire)',
 )
-@click.option('--abi', help='Specify ABI to inject (optional; default: all)')
+@click.option(
+    '--abis',
+    type=click.Choice(constants.ABIS, case_sensitive=False),
+    multiple=True,
+    help='Specify ABIs to inject',
+    default=constants.ABIS,
+)
 @click.option(
     '--smali',
     help='Specify Smali file to inject (optional; default: main activity)',
@@ -23,10 +34,10 @@ def auto(
     ctx: click.Context,
     manifest_file: Path,
     lib: str,
-    abi: str,
+    abis: tuple[str],
     smali: str,
 ):
-    injected = ctx.parent.invoke(commands.native_lib, lib=lib, abi=abi)(manifest_file)
+    injected = ctx.parent.invoke(commands.native_lib, lib=lib, abis=abis)(manifest_file)
 
     if not injected:
         injected = ctx.parent.invoke(commands.smali, smali=smali)(manifest_file)

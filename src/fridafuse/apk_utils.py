@@ -17,10 +17,14 @@ def get_available_abis(lib_dir: Path):
     return [subdir.name for subdir in lib_dir.iterdir() if subdir.is_dir()]
 
 
-def get_available_archs(lib_dir: Path):
+def get_available_archs(lib_dir: Path, filtered_abis: list[str] | None = None):
     pairs = zip(ARCHITECTURES, ABIS)
 
-    return [(arch, abi) for arch, abi in pairs if abi in get_available_abis(lib_dir)]
+    return [
+        (arch, abi)
+        for arch, abi in pairs
+        if abi in get_available_abis(lib_dir) and (True if not filtered_abis else abi in filtered_abis)
+    ]
 
 
 def get_available_native_libs(arch_dir: Path, excludes: list[str] | None = None):
@@ -39,7 +43,11 @@ def lib_to_base_name(lib_name: str):
 
 def mask_dynamic_registers(snippet: str, as_mask: str = '<dynamic-register>') -> str:
     # replace matches any register name (e.g., v0, p0, a0, etc.)
-    return re.sub(r'\{+[a-zA-Z]+\d+\}', f'{{{as_mask}}}', re.sub(r'\s+[a-zA-Z]+\d+\,', f' {as_mask},', snippet))
+    return re.sub(
+        r'\{+[a-zA-Z]+\d+\}',
+        f'{{{as_mask}}}',
+        re.sub(r'\s+[a-zA-Z]+\d+\,', f' {as_mask},', snippet),
+    )
 
 
 def is_smali_injected(content: str | Path, snippet: str):

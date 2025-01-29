@@ -132,13 +132,14 @@ def inject_nativelib(
     lib_name: str | None = None,
     gadget_name: str = DEST_GADGET_NAME,
     gadget_version: str = downloader.LATEST_VERSION,
+    abis: list[str] | None = None,
 ):
     err_message = "Couldn't inject into Native Library"
 
     if not lib_dir.is_dir():
         return logger.error(f"{err_message}, lib directory couldn't be found.")
 
-    available_archs = apk_utils.get_available_archs(lib_dir)
+    available_archs = apk_utils.get_available_archs(lib_dir, abis)
 
     if len(available_archs) <= 0:
         return logger.error(f'{err_message}, No supported ABIs found.')
@@ -203,7 +204,8 @@ def decompile_apk(file: Path) -> tuple[Path, Callable[[Path | None], Path]]:
     utils.spawn_subprocess(['java', '-jar', apktool, 'empty-framework-dir'])
 
     return decompiled_dir, lambda output_file=None: recompile_apk(
-        decompiled_dir, f'{file.stem}_patched-unsigned.apk' if output_file is None else output_file
+        decompiled_dir,
+        f'{file.stem}_patched-unsigned.apk' if output_file is None else output_file,
     )
 
 

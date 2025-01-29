@@ -2,6 +2,7 @@ from __future__ import annotations
 
 from functools import update_wrapper
 from pathlib import Path
+from typing import Callable
 
 import click
 
@@ -62,7 +63,7 @@ def cli(file_path, output, gadget_version, skip_sign, edit):  # noqa: ARG001
 @click.pass_context
 def process_commands(
     ctx: click.Context,
-    processors,
+    processors: list[Callable],
     file_path: Path,
     output: Path | None,
     gadget_version,  # noqa: ARG001
